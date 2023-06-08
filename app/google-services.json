@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1052700290328",
+    "project_id": "telegram-a9e49",
+    "storage_bucket": "telegram-a9e49.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1052700290328:android:3bdd1c977624f3d801426d",
+        "android_client_info": {
+          "package_name": "com.example.telegram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1052700290328-ur1oneldu8sm0lq88vqfa478inrhirvr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.telegram",
+            "certificate_hash": "753d698f46304c41e389c53035a54b62af0dd2a6"
+          }
+        },
+        {
+          "client_id": "1052700290328-b81lak7rf7ofgonmqlag4a3v4i7v5gv8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdZXNOZQDDPYm_P_8OeOnnAYjM2o_F4CU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1052700290328-b81lak7rf7ofgonmqlag4a3v4i7v5gv8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
