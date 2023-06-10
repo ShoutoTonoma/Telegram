@@ -1,6 +1,9 @@
 package com.example.telegram.utilits
 
 import android.net.Uri
+import android.provider.ContactsContract
+import android.util.Log
+import com.example.telegram.models.CommonModel
 import com.example.telegram.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -16,7 +19,8 @@ lateinit var USER: User
 
 const val NODE_USERS = "users"
 const val NODE_USERNAMES = "usernames"
-
+const val NODE_PHONES = "phones"
+const val NODE_PHONES_CONTACTS = "phones_contacts"
 const val FOLDER_PROFILE_IMAGE = "profile_image"
 
 
@@ -66,4 +70,45 @@ inline fun initUser(crossinline function: () -> Unit) {
             }
             function()
         })
+}
+
+fun initContacts() {
+    if(checkPermissions(READ_CONTACTS)) {
+        var arrayContacts = arrayListOf<CommonModel>()
+        val cursor = APP_ACTIVITY.contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            null,
+            null,
+            null,
+            null
+        )
+        cursor?.let {
+            while(it.moveToNext()) {
+                val fullName = it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME)) // getColumnIndex
+                val phone = it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                val newModel = CommonModel()
+                newModel.fullname = fullName
+                newModel.phone = phone.replace(Regex("[\\s, -]"), "")
+                arrayContacts.add(newModel)
+            }
+        }
+        Log.d("myLog", "${arrayContacts[0]} ${arrayContacts[1]}")
+        cursor?.close()
+        updatePhonesToDatabase(arrayContacts)
+    }
+}
+
+fun updatePhonesToDatabase(arrayContacts: ArrayList<CommonModel>) {
+    REF_DATABASE_ROOT.child(NODE_PHONES).addListenerForSingleValueEvent(AppValueEventListener {
+        it.children.forEach { snapthot ->
+            arrayContacts.forEach { contact ->
+                if (snapthot.key == contact.phone) {
+                    REF_DATABASE_ROOT.child(NODE_PHONES_CONTACTS).child(CURRENT_UID)
+                        .child(snapthot.value.toString()).child(CHILD_ID)
+                        .setValue(snapthot.value.toString())
+                        .addOnFailureListener{ showToast(it.message.toString()) }
+                }
+            }
+        }
+    })
 }

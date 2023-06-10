@@ -37,12 +37,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initContacts() {
-        if(checkPermissions(READ_CONTACTS)) {
-           val array = arrayOfNulls<Int>(900000)
-            array.forEach { println(it) }
-        }
-    }
 
 
     // Функциональность Activity
