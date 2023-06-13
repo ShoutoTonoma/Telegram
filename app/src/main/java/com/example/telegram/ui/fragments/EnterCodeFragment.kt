@@ -11,6 +11,7 @@ class EnterCodeFragment(val phoneNumber: String, val id: String) : BaseFragment<
 ) {
 
 
+
     override fun onStart() {
         super.onStart()
         (activity as RegisterActivity).title = phoneNumber
