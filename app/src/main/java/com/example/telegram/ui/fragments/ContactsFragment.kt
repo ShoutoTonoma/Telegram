@@ -18,6 +18,7 @@ import com.example.telegram.utilits.NODE_USERS
 import com.example.telegram.utilits.REF_DATABASE_ROOT
 import com.example.telegram.utilits.downloadAndSetImage
 import com.example.telegram.utilits.getCommonModel
+import com.example.telegram.utilits.replaceFragment
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DatabaseReference
@@ -61,13 +62,14 @@ class ContactsFragment : BaseFragment<FragmentContactsBinding>(
                 position: Int,
                 model: CommonModel
             ) {
-                mRefUsers = REF_DATABASE_ROOT.child(NODE_USERS).child(model.id)
+                mRefUsers = REF_DATABASE_ROOT.child(NODE_USERS).child(  model.id)
 
                 mRefUsersListeners = AppValueEventListener {
                     val contact = it.getCommonModel()
                     holder.name.text = contact.fullname
                     holder.status.text = contact.state
                     holder.photo.downloadAndSetImage(contact.photoUrl)
+                    holder.itemView.setOnClickListener { replaceFragment(SingleChatFragment(contact)) }
                 }
 
                 mRefUsers.addValueEventListener(mRefUsersListeners)

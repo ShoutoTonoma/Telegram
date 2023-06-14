@@ -24,7 +24,7 @@
         android:textStyle="bold"
         android:textColor="@color/dark"
         android:textSize="@dimen/normalText"
-        android:layout_margin="@dimen/vertical_margin"
+        android:layout_margin="@dimen/app_small_margin"
         android:text="@string/register_text_enter_code"
         android:gravity="center"
         app:layout_constraintTop_toBottomOf="@id/registerImage"
@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         style="@style/smallText"
         android:gravity="center"
-        android:layout_margin="@dimen/vertical_margin"
+        android:layout_margin="@dimen/app_small_margin"
         android:text="@string/register_text_we_sent"
         app:layout_constraintTop_toBottomOf="@id/registerTextEnterCode"/>
 
@@ -47,7 +47,7 @@
         style="@style/PinWidget.PinView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/vertical_margin"
+        android:layout_marginTop="@dimen/app_small_margin"
         android:inputType="phone"
         android:minHeight="48dp"
         android:textColor="@color/dark"
