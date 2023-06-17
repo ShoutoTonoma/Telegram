@@ -11,6 +11,7 @@ import com.example.telegram.activities.RegisterActivity
 import com.example.telegram.databinding.FragmentSettingsBinding
 import com.example.telegram.utilits.APP_ACTIVITY
 import com.example.telegram.utilits.AUTH
+import com.example.telegram.utilits.AppStates
 import com.example.telegram.utilits.CHILD_PHOTO_URL
 import com.example.telegram.utilits.FOLDER_PROFILE_IMAGE
 import com.example.telegram.utilits.REF_STORAGE_ROOT
@@ -88,6 +89,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.settings_menu_exit -> {
+                AppStates.updateStates(AppStates.OFFLINE)
                 AUTH.signOut()
                 APP_ACTIVITY.replaceActivity(RegisterActivity())
             }

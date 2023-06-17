@@ -8,7 +8,7 @@
     android:background="@color/telegram_color_primary">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/toolbar_image"
+        android:id="@+id/toolbar_chat_image"
         android:layout_width="@dimen/toolbar_image_width"
         android:layout_height="@dimen/toolbar_image_height"
         android:src="@drawable/default_photo"
@@ -18,20 +18,20 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
-        android:id="@+id/contact_fullname"
+        android:id="@+id/toolbar_chat_fullname"
         style="@style/normalText"
         tools:text="Shouto Tonoma"
         android:textColor="@color/telegram_color_accent"
-        app:layout_constraintStart_toEndOf="@id/toolbar_image"
-        app:layout_constraintTop_toTopOf="@id/toolbar_image"/>
+        app:layout_constraintStart_toEndOf="@id/toolbar_chat_image"
+        app:layout_constraintTop_toTopOf="@id/toolbar_chat_image"/>
 
     <TextView
-        android:id="@+id/contact_status"
+        android:id="@+id/toolbar_chat_status"
         style="@style/smallText"
         tools:text="в сети"
         android:textColor="@color/telegram_color_accent_dark"
-        app:layout_constraintStart_toEndOf="@id/toolbar_image"
-        app:layout_constraintTop_toBottomOf="@id/contact_fullname"/>
+        app:layout_constraintStart_toEndOf="@id/toolbar_chat_image"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_chat_fullname"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

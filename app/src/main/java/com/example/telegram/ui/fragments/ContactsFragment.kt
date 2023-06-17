@@ -62,14 +62,18 @@ class ContactsFragment : BaseFragment<FragmentContactsBinding>(
                 position: Int,
                 model: CommonModel
             ) {
-                mRefUsers = REF_DATABASE_ROOT.child(NODE_USERS).child(  model.id)
+                mRefUsers = REF_DATABASE_ROOT.child(NODE_USERS).child(model.id)
 
                 mRefUsersListeners = AppValueEventListener {
                     val contact = it.getCommonModel()
-                    holder.name.text = contact.fullname
+
+                    if(contact.fullname.isEmpty()) {
+                        holder.name.text = model.fullname
+                    } else holder.name.text = contact.fullname
+
                     holder.status.text = contact.state
                     holder.photo.downloadAndSetImage(contact.photoUrl)
-                    holder.itemView.setOnClickListener { replaceFragment(SingleChatFragment(contact)) }
+                    holder.itemView.setOnClickListener { replaceFragment(SingleChatFragment(model)) }
                 }
 
                 mRefUsers.addValueEventListener(mRefUsersListeners)
