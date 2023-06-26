@@ -7,32 +7,35 @@ import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.telegram.MainActivity
 import com.example.telegram.R
+import com.example.telegram.database.updatePhonesToDatabase
 import com.example.telegram.models.CommonModel
 import com.squareup.picasso.Picasso
-import de.hdodenhof.circleimageview.CircleImageView
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 fun showToast(message: String) {
     Toast.makeText(APP_ACTIVITY, message, Toast.LENGTH_SHORT).show()
 }
 
-fun AppCompatActivity.replaceActivity(activity: AppCompatActivity) {
-    val intent = Intent(this, activity::class.java)
-    startActivity(intent)
-    this.finish()
+fun restartActivity() {
+    val intent = Intent(APP_ACTIVITY, MainActivity::class.java)
+    APP_ACTIVITY.startActivity(intent)
+    APP_ACTIVITY.finish()
 }
 
-fun AppCompatActivity.replaceFragment(fragment: Fragment, addStack: Boolean = true) {
+fun replaceFragment(fragment: Fragment, addStack: Boolean = true) {
     if(addStack) {
-        supportFragmentManager.beginTransaction()
+        APP_ACTIVITY.supportFragmentManager.beginTransaction()
             .addToBackStack(null)
             .replace(R.id.dataContainer,
                 fragment
             ).commit()
     } else {
-        supportFragmentManager.beginTransaction()
+        APP_ACTIVITY.supportFragmentManager.beginTransaction()
             .replace(R.id.dataContainer,
                 fragment
             ).commit()
@@ -40,13 +43,7 @@ fun AppCompatActivity.replaceFragment(fragment: Fragment, addStack: Boolean = tr
 
 }
 
-fun Fragment.replaceFragment(fragment: Fragment) {
-    parentFragmentManager.beginTransaction()
-        .addToBackStack(null)
-        .replace(R.id.dataContainer,
-            fragment
-        ).commit()
-}
+
 
 fun hideKeyboard() {
     val imm: InputMethodManager = APP_ACTIVITY.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -85,4 +82,10 @@ fun initContacts() {
         cursor?.close()
         updatePhonesToDatabase(arrayContacts)
     }
+}
+
+fun String.asTime(): String {
+    val time = Date(this.toLong())
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return timeFormat.format(time)
 }

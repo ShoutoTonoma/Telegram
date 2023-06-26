@@ -20,15 +20,8 @@
             android:theme="@style/Base.Theme.AppCompat"/>
 
         <activity
-            android:name=".activities.RegisterActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name=".MainActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

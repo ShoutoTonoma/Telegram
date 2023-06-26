@@ -2,32 +2,26 @@ package com.example.telegram.ui.fragments
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent
-import android.net.Uri
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import com.example.telegram.R
-import com.example.telegram.activities.RegisterActivity
 import com.example.telegram.databinding.FragmentSettingsBinding
+import com.example.telegram.ui.fragments.base.BaseFragment
 import com.example.telegram.utilits.APP_ACTIVITY
-import com.example.telegram.utilits.AUTH
+import com.example.telegram.database.AUTH
 import com.example.telegram.utilits.AppStates
-import com.example.telegram.utilits.CHILD_PHOTO_URL
-import com.example.telegram.utilits.FOLDER_PROFILE_IMAGE
-import com.example.telegram.utilits.REF_STORAGE_ROOT
-import com.example.telegram.utilits.CURRENT_UID
-import com.example.telegram.utilits.NODE_USERS
-import com.example.telegram.utilits.REF_DATABASE_ROOT
-import com.example.telegram.utilits.USER
+import com.example.telegram.database.FOLDER_PROFILE_IMAGE
+import com.example.telegram.database.REF_STORAGE_ROOT
+import com.example.telegram.database.CURRENT_UID
+import com.example.telegram.database.USER
 import com.example.telegram.utilits.downloadAndSetImage
-import com.example.telegram.utilits.getUrlFromStorage
-import com.example.telegram.utilits.putImageToStorage
-import com.example.telegram.utilits.putUrlToDatabase
-import com.example.telegram.utilits.replaceActivity
+import com.example.telegram.database.getUrlFromStorage
+import com.example.telegram.database.putImageToStorage
+import com.example.telegram.database.putUrlToDatabase
 import com.example.telegram.utilits.replaceFragment
+import com.example.telegram.utilits.restartActivity
 import com.example.telegram.utilits.showToast
-import com.google.firebase.storage.StorageReference
-import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 
@@ -91,7 +85,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(
             R.id.settings_menu_exit -> {
                 AppStates.updateStates(AppStates.OFFLINE)
                 AUTH.signOut()
-                APP_ACTIVITY.replaceActivity(RegisterActivity())
+                restartActivity()
             }
             R.id.settings_menu_change_name -> replaceFragment(ChangeNameFragment())
         }

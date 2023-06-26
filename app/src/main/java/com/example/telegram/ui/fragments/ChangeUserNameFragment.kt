@@ -1,14 +1,13 @@
 package com.example.telegram.ui.fragments
 
-import com.example.telegram.R
 import com.example.telegram.databinding.FragmentChangeUserNameBinding
+import com.example.telegram.ui.fragments.base.BaseChangeFragment
 import com.example.telegram.utilits.AppValueEventListener
-import com.example.telegram.utilits.CHILD_USERNAME
-import com.example.telegram.utilits.NODE_USERNAMES
-import com.example.telegram.utilits.NODE_USERS
-import com.example.telegram.utilits.REF_DATABASE_ROOT
-import com.example.telegram.utilits.CURRENT_UID
-import com.example.telegram.utilits.USER
+import com.example.telegram.database.NODE_USERNAMES
+import com.example.telegram.database.REF_DATABASE_ROOT
+import com.example.telegram.database.CURRENT_UID
+import com.example.telegram.database.USER
+import com.example.telegram.database.updateCurrentUserName
 import com.example.telegram.utilits.showToast
 import java.util.Locale
 
@@ -45,34 +44,12 @@ class ChangeUserNameFragment : BaseChangeFragment<FragmentChangeUserNameBinding>
         REF_DATABASE_ROOT.child(NODE_USERNAMES).child(mNewUserName).setValue(CURRENT_UID)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    updateCurrentUserName()
+                    updateCurrentUserName(mNewUserName)
                 }
             }
     }
 
-    private fun updateCurrentUserName() {
-        REF_DATABASE_ROOT.child(NODE_USERS).child(CURRENT_UID).child(CHILD_USERNAME)
-            .setValue(mNewUserName)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    showToast(getString(R.string.toast_data_update))
-                    deleteOldUsername()
-                } else {
-                    showToast(it.exception?.message.toString())
-                }
-            }
-    }
 
-    private fun deleteOldUsername() {
-        REF_DATABASE_ROOT.child(NODE_USERNAMES).child(USER.username).removeValue()
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    showToast(getString(R.string.toast_data_update))
-                    parentFragmentManager.popBackStack()
-                    USER.username = mNewUserName
-                } else {
-                    showToast(it.exception?.message.toString())
-                }
-            }
-    }
+
+
 }

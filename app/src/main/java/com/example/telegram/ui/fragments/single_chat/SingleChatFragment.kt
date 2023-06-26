@@ -1,21 +1,26 @@
-package com.example.telegram.ui.fragments
+package com.example.telegram.ui.fragments.single_chat
 
 
 import android.view.View
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.RecyclerView
 import com.example.telegram.R
 import com.example.telegram.databinding.FragmentSingleChatBinding
 import com.example.telegram.models.CommonModel
 import com.example.telegram.models.UserModel
+import com.example.telegram.ui.fragments.base.BaseFragment
 import com.example.telegram.utilits.APP_ACTIVITY
 import com.example.telegram.utilits.AppValueEventListener
-import com.example.telegram.utilits.NODE_USERS
-import com.example.telegram.utilits.REF_DATABASE_ROOT
-import com.example.telegram.utilits.TYPE_TEXT
+import com.example.telegram.database.CURRENT_UID
+import com.example.telegram.database.NODE_MESSAGES
+import com.example.telegram.database.NODE_USERS
+import com.example.telegram.database.REF_DATABASE_ROOT
+import com.example.telegram.database.TYPE_TEXT
 import com.example.telegram.utilits.downloadAndSetImage
-import com.example.telegram.utilits.getUserModel
-import com.example.telegram.utilits.sendMessage
+import com.example.telegram.database.getCommonModel
+import com.example.telegram.database.getUserModel
+import com.example.telegram.database.sendMessage
 import com.example.telegram.utilits.showToast
 import com.google.firebase.database.DatabaseReference
 import de.hdodenhof.circleimageview.CircleImageView
@@ -29,9 +34,34 @@ class SingleChatFragment(private val contact: CommonModel) : BaseFragment<Fragme
     private lateinit var mReceivingUser: UserModel
     private lateinit var mToolbarInfo: View
     private lateinit var mRefUsers: DatabaseReference
+    private lateinit var mRefMessages: DatabaseReference
+    private lateinit var mAdapter: SingleChatAdapter
+    private lateinit var mRecyclerView: RecyclerView
+    private lateinit var mMessageListener: AppValueEventListener
+    private var mListMessages = emptyList<CommonModel>()
 
     override fun onResume() {
         super.onResume()
+        initToolbar()
+        initRecycleView()
+    }
+
+    private fun initRecycleView() {
+        mRecyclerView = binding.chatRecycleView
+        mAdapter = SingleChatAdapter()
+        mRefMessages = REF_DATABASE_ROOT.child(NODE_MESSAGES)
+            .child(CURRENT_UID)
+            .child(contact.id)
+        mRecyclerView.adapter = mAdapter
+        mMessageListener = AppValueEventListener { dataSnapshot ->
+            mListMessages = dataSnapshot.children.map { it.getCommonModel() }
+            mAdapter.setList(mListMessages)
+            mRecyclerView.smoothScrollToPosition(mAdapter.itemCount)
+        }
+        mRefMessages.addValueEventListener(mMessageListener)
+    }
+
+    private fun initToolbar() {
         mToolbarInfo = APP_ACTIVITY.mToolbar.findViewById<ConstraintLayout>(R.id.toolbar_info)
         mToolbarInfo.visibility = View.VISIBLE
         mListenerInfoToolbar = AppValueEventListener {
@@ -43,7 +73,7 @@ class SingleChatFragment(private val contact: CommonModel) : BaseFragment<Fragme
         mRefUsers.addValueEventListener(mListenerInfoToolbar)
         binding.chatBtnSendMessage.setOnClickListener {
             val message = binding.chatInputMessage.text.toString()
-            if(message.isEmpty()) {
+            if (message.isEmpty()) {
                 showToast("Введите сообщение")
             } else sendMessage(message, contact.id, TYPE_TEXT) {
                 binding.chatInputMessage.setText("")
@@ -65,5 +95,6 @@ class SingleChatFragment(private val contact: CommonModel) : BaseFragment<Fragme
         super.onPause()
         mToolbarInfo.visibility = View.GONE
         mRefUsers.removeEventListener(mListenerInfoToolbar)
+        mRefMessages.removeEventListener(mMessageListener)
     }
 }

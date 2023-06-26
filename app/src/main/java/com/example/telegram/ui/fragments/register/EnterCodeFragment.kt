@@ -1,12 +1,18 @@
-package com.example.telegram.ui.fragments
+package com.example.telegram.ui.fragments.register
 
-import com.example.telegram.MainActivity
-import com.example.telegram.activities.RegisterActivity
+import com.example.telegram.database.AUTH
+import com.example.telegram.database.CHILD_ID
+import com.example.telegram.database.CHILD_PHONE
+import com.example.telegram.database.CHILD_USERNAME
+import com.example.telegram.database.NODE_PHONES
+import com.example.telegram.database.NODE_USERS
+import com.example.telegram.database.REF_DATABASE_ROOT
 import com.example.telegram.databinding.FragmentEnterCodeBinding
+import com.example.telegram.ui.fragments.base.BaseRegisterFragment
 import com.example.telegram.utilits.*
 import com.google.firebase.auth.PhoneAuthProvider
 
-class EnterCodeFragment(val phoneNumber: String, val id: String) : BaseFragment<FragmentEnterCodeBinding>(
+class EnterCodeFragment(val phoneNumber: String, val id: String) : BaseRegisterFragment<FragmentEnterCodeBinding>(
     FragmentEnterCodeBinding::inflate
 ) {
 
@@ -14,7 +20,7 @@ class EnterCodeFragment(val phoneNumber: String, val id: String) : BaseFragment<
 
     override fun onStart() {
         super.onStart()
-        (activity as RegisterActivity).title = phoneNumber
+        APP_ACTIVITY.title = phoneNumber
         binding.registerPinView.requestFocus()
         binding.registerPinView.addTextChangedListener(AppTextWatcher {
             val string = binding.registerPinView.text.toString()
@@ -41,7 +47,7 @@ class EnterCodeFragment(val phoneNumber: String, val id: String) : BaseFragment<
                         REF_DATABASE_ROOT.child(NODE_USERS).child(uid).updateChildren(dateMap)
                             .addOnSuccessListener {
                                 showToast("Добро пожаловать")
-                                (activity as RegisterActivity).replaceActivity(MainActivity())
+                                restartActivity()
                             }
                             .addOnFailureListener { showToast(it.message.toString()) }
                     }

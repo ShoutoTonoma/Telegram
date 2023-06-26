@@ -1,13 +1,13 @@
-package com.example.telegram.ui.fragments
+package com.example.telegram.ui.fragments.register
 
 import android.util.Log
-import com.example.telegram.MainActivity
 import com.example.telegram.R
-import com.example.telegram.activities.RegisterActivity
 import com.example.telegram.databinding.FragmentEnterPhoneNumberBinding
-import com.example.telegram.utilits.AUTH
-import com.example.telegram.utilits.replaceActivity
+import com.example.telegram.ui.fragments.base.BaseRegisterFragment
+import com.example.telegram.utilits.APP_ACTIVITY
+import com.example.telegram.database.AUTH
 import com.example.telegram.utilits.replaceFragment
+import com.example.telegram.utilits.restartActivity
 import com.example.telegram.utilits.showToast
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
@@ -16,7 +16,7 @@ import com.google.firebase.auth.PhoneAuthProvider
 import java.util.concurrent.TimeUnit
 
 
-class EnterPhoneNumberFragment: BaseFragment<FragmentEnterPhoneNumberBinding>(
+class EnterPhoneNumberFragment: BaseRegisterFragment<FragmentEnterPhoneNumberBinding>(
     FragmentEnterPhoneNumberBinding::inflate
 ) {
 
@@ -33,7 +33,7 @@ class EnterPhoneNumberFragment: BaseFragment<FragmentEnterPhoneNumberBinding>(
                 AUTH.signInWithCredential(credential).addOnCompleteListener { task ->
                     if(task.isSuccessful) {
                         showToast("Добро пожаловать")
-                        (activity as RegisterActivity).replaceActivity(MainActivity())
+                        restartActivity()
                     } else showToast(task.exception?.message.toString())
                 }
             }
@@ -45,7 +45,6 @@ class EnterPhoneNumberFragment: BaseFragment<FragmentEnterPhoneNumberBinding>(
 
             override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
                 replaceFragment(EnterCodeFragment(mPhoneNumber, id))
-
             }
         }
         binding.registerBtnNext.setOnClickListener { sendCode() }
@@ -64,7 +63,7 @@ class EnterPhoneNumberFragment: BaseFragment<FragmentEnterPhoneNumberBinding>(
         options = PhoneAuthOptions.newBuilder(AUTH)
             .setPhoneNumber(mPhoneNumber)
             .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(activity as RegisterActivity)
+            .setActivity(APP_ACTIVITY)
             .setCallbacks(mCallback)
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
