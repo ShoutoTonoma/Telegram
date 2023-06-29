@@ -2,6 +2,7 @@ package com.example.telegram.ui.fragments.single_chat
 
 
 import android.view.View
+import android.widget.AbsListView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,7 @@ import com.example.telegram.utilits.downloadAndSetImage
 import com.example.telegram.database.getCommonModel
 import com.example.telegram.database.getUserModel
 import com.example.telegram.database.sendMessage
+import com.example.telegram.utilits.AppChildEventListener
 import com.example.telegram.utilits.showToast
 import com.google.firebase.database.DatabaseReference
 import de.hdodenhof.circleimageview.CircleImageView
@@ -37,8 +39,12 @@ class SingleChatFragment(private val contact: CommonModel) : BaseFragment<Fragme
     private lateinit var mRefMessages: DatabaseReference
     private lateinit var mAdapter: SingleChatAdapter
     private lateinit var mRecyclerView: RecyclerView
-    private lateinit var mMessageListener: AppValueEventListener
-    private var mListMessages = emptyList<CommonModel>()
+    private lateinit var mMessageListener: AppChildEventListener
+    private var mCountMessages = 10
+    private var mIsScrolling = false
+    private var mSmoothScrollToPosition = true
+    private var mListListeners = mutableListOf<AppChildEventListener>()
+
 
     override fun onResume() {
         super.onResume()
@@ -49,16 +55,46 @@ class SingleChatFragment(private val contact: CommonModel) : BaseFragment<Fragme
     private fun initRecycleView() {
         mRecyclerView = binding.chatRecycleView
         mAdapter = SingleChatAdapter()
-        mRefMessages = REF_DATABASE_ROOT.child(NODE_MESSAGES)
+        mRefMessages = REF_DATABASE_ROOT
+            .child(NODE_MESSAGES)
             .child(CURRENT_UID)
             .child(contact.id)
         mRecyclerView.adapter = mAdapter
-        mMessageListener = AppValueEventListener { dataSnapshot ->
-            mListMessages = dataSnapshot.children.map { it.getCommonModel() }
-            mAdapter.setList(mListMessages)
-            mRecyclerView.smoothScrollToPosition(mAdapter.itemCount)
+
+        mMessageListener = AppChildEventListener {
+            mAdapter.addItem(it.getCommonModel())
+            if (mSmoothScrollToPosition) {
+                mRecyclerView.smoothScrollToPosition(mAdapter.itemCount)
+            }
+
         }
-        mRefMessages.addValueEventListener(mMessageListener)
+
+        mRefMessages.limitToLast(mCountMessages).addChildEventListener(mMessageListener)
+        mListListeners.add(mMessageListener)
+
+        mRecyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (mIsScrolling && dy < 0) {
+                    updateData()
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    mIsScrolling = true
+                }
+            }
+        })
+    }
+
+    private fun updateData() {
+        mSmoothScrollToPosition = false
+        mIsScrolling = false
+        mCountMessages += 10
+        mRefMessages.limitToLast(mCountMessages).addChildEventListener(mMessageListener)
+        mListListeners.add(mMessageListener)
     }
 
     private fun initToolbar() {
@@ -72,6 +108,7 @@ class SingleChatFragment(private val contact: CommonModel) : BaseFragment<Fragme
         mRefUsers = REF_DATABASE_ROOT.child(NODE_USERS).child(contact.id)
         mRefUsers.addValueEventListener(mListenerInfoToolbar)
         binding.chatBtnSendMessage.setOnClickListener {
+            mSmoothScrollToPosition = true
             val message = binding.chatInputMessage.text.toString()
             if (message.isEmpty()) {
                 showToast("Введите сообщение")
@@ -95,6 +132,8 @@ class SingleChatFragment(private val contact: CommonModel) : BaseFragment<Fragme
         super.onPause()
         mToolbarInfo.visibility = View.GONE
         mRefUsers.removeEventListener(mListenerInfoToolbar)
-        mRefMessages.removeEventListener(mMessageListener)
+        mListListeners.forEach {
+            mRefMessages.removeEventListener(it)
+        }
     }
 }

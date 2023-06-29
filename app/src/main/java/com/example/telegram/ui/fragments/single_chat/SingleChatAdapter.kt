@@ -5,15 +5,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.telegram.R
 import com.example.telegram.models.CommonModel
 import com.example.telegram.database.CURRENT_UID
+import com.example.telegram.utilits.DiffUtilCallback
 import com.example.telegram.utilits.asTime
 
 class SingleChatAdapter: RecyclerView.Adapter<SingleChatAdapter.SingleChatHolder>() {
 
     private var mListMessageCache = emptyList<CommonModel>()
+    private lateinit var mDiffResult: DiffUtil.DiffResult
 
     class SingleChatHolder(view: View): RecyclerView.ViewHolder(view) {
         val blockUserMessage: ConstraintLayout = view.findViewById(R.id.block_user_message)
@@ -48,8 +51,16 @@ class SingleChatAdapter: RecyclerView.Adapter<SingleChatAdapter.SingleChatHolder
         }
     }
 
-    fun setList(list: List<CommonModel>) {
-        mListMessageCache = list
-        notifyDataSetChanged()
+
+    fun addItem(item: CommonModel) {
+        val newList = mutableListOf<CommonModel>()
+        newList.addAll(mListMessageCache)
+        
+        if (!newList.contains(item)) newList.add(item)
+
+        newList.sortBy { it.timeStamp.toString() }
+        mDiffResult = DiffUtil.calculateDiff(DiffUtilCallback(mListMessageCache, newList))
+        mDiffResult.dispatchUpdatesTo(this)
+        mListMessageCache = newList
     }
 }
