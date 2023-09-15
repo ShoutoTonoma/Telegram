@@ -14,7 +14,7 @@ import com.example.telegram.ui.fragments.InflateChange
 import com.example.telegram.utilits.APP_ACTIVITY
 import com.example.telegram.utilits.hideKeyboard
 
-open class BaseChangeFragment<VB: ViewBinding>(
+open class BaseChangeFragment<VB : ViewBinding>(
     private val inflate: InflateChange<VB>
 ) : Fragment() {
 
@@ -34,7 +34,7 @@ open class BaseChangeFragment<VB: ViewBinding>(
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.settings_confirm_change -> change()
         }
         return true
